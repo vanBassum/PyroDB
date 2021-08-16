@@ -29,7 +29,7 @@
         @{foreach (GHSSymbols flag in Enum.GetValues(Model.GHS.GetType()).Cast<Enum>().Where(Model.GHS.HasFlag))
             {
                 var img = "images\\" + flag.ToString() + ".svg";
-                <dt class="col-sm-2">
+                <dt class="col-sm-10">
                     <img src="@img" alt="@flag.ToString()" width="64px" />
                 </dt>
             }

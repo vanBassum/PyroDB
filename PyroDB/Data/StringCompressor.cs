@@ -56,5 +56,15 @@ namespace PyroDB.Models
                 return Encoding.UTF8.GetString(buffer);
             }
         }
+
+        public static string Base64Encode(this byte[] data)
+        {
+            return System.Convert.ToBase64String(data);
+        }
+
+        public static byte[] Base64Decode(this string data)
+        {
+            return System.Convert.FromBase64String(data);
+        }
     }
 }

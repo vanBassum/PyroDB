@@ -27,21 +27,27 @@
             </div>
             <div class="form-group">
 
-                @using (Html.BeginForm("Index", "Home"))
+                @foreach (var item in PyroDB.Models.Chemical.GetAvailableGHS())
                 {
-                    foreach (var item in Model.AvailableGHS)
-                    {
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox"
-                                       name="SelectedFruits"
-                                       value="@item.Value"
-                                       @if (Model.SelectedGHS != null)
-                                            @if (Model.SelectedGHS.Contains(item.Value)) { <text> checked </text>  } /> @item.Text
-                                </label>
-                            </div>
-                        }
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox"
+                                    name="SelectedGHS"
+                                    value="@item.Value"
+                                    @if (Model != null)
+                                    {
+                                        @if (Model.SelectedGHS != null)
+                                        {
+                                            @if (Model.SelectedGHS.Contains(item.Value))
+                                            {
+                                                <text> checked </text>  
+                                            }
+                                        }
+                                    } /> @item.Text
+                            </label>
+                        </div>
                     }
+                    
             </div>
 
             <div class="form-group">
