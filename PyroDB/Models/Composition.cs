@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using System.Text.Json;
 
 namespace PyroDB.Models
@@ -47,34 +49,62 @@ namespace PyroDB.Models
         public string Notes { get; set; }
         public GHSSymbols GHS { get; set; }
 
+        
+
+        [NotMapped]
+        public IList<string> SelectedGHS 
+        { 
+            get
+            {
+                var result = new List<string>();
+                foreach (GHSSymbols flag in Enum.GetValues(typeof(GHSSymbols)))
+                {
+                    if(GHS.HasFlag(flag))
+                        result.Add(flag.ToString());
+                }
+                return result;
+            }
+
+            set
+            {
+                GHS = 0;
+                foreach (GHSSymbols flag in Enum.GetValues(typeof(GHSSymbols)))
+                {
+                    if (value.Contains(flag.ToString()))
+                        GHS |= flag;
+                }
+            }
+        }
+
+        [NotMapped]
+        public IList<SelectListItem> AvailableGHS 
+        { 
+            get 
+            {
+                var result = new List<SelectListItem>();
+
+                foreach(var flag in Enum.GetValues(typeof(GHSSymbols)))
+                {
+                    result.Add(new SelectListItem() { Text = flag.ToString(), Value = flag.ToString() });
+                }
+                return result;
+            } 
+            
+        }
+
     }
-    /*
+
     [Flags]
     public enum GHSSymbols
-    {
-        Explosive = 1,
-        Flammable = 2,
-        Oxidizing = 3,
-        Compressed_Gas = 4,
-        Corrosive = 5,
-        Toxic = 6,
-        Harmful = 7,
-        Health_Hazard = 8,
-        Environmental_Hazard = 9,
+    { 
+        Explosive      = 1,
+        Flammable      = 2,
+        Oxidizing      = 4,
+        Compressed     = 8,
+        Corrosive      = 16,
+        Toxic          = 32,
+        Harmful        = 64,
+        Health         = 128,
+        Environmental  = 256,
     }
-    */
-     [Flags]
-     public enum GHSSymbols
-     { 
-         Explosive      = 1,
-         Flammable      = 2,
-         Oxidizing      = 4,
-         Compressed     = 8,
-         Corrosive      = 16,
-         Toxic          = 32,
-         Harmful        = 64,
-         Health         = 128,
-         Environmental  = 256,
-     }
-
 }

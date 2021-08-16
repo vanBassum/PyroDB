@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Edit";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
 }
 
 <h1>Edit</h1>
@@ -24,23 +25,23 @@
                 <input asp-for="Symbol" class="form-control" />
                 <span asp-validation-for="Symbol" class="text-danger"></span>
             </div>
-
-
             <div class="form-group">
-                @foreach (GHSSymbols flag in Enum.GetValues(typeof(GHSSymbols)).Cast<Enum>())
+
+                @using (Html.BeginForm("Index", "Home"))
                 {
-                <div class="checkbox">
-                    <label>
-                        <input type="checkbox"
-                               name="GHS"
-                               value="@Model.GHS"
-                               @if (Model.GHS.HasFlag(flag)) 
-                               { 
-                                   <text> checked </text>  
-                               } /> @flag.ToString()
-                        </label>
-                </div>
-                }
+                    foreach (var item in Model.AvailableGHS)
+                    {
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox"
+                                       name="SelectedFruits"
+                                       value="@item.Value"
+                                       @if (Model.SelectedGHS != null)
+                                            @if (Model.SelectedGHS.Contains(item.Value)) { <text> checked </text>  } /> @item.Text
+                                </label>
+                            </div>
+                        }
+                    }
             </div>
 
             <div class="form-group">

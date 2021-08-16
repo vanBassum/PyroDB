@@ -86,7 +86,7 @@ namespace PyroDB.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,Name,Symbol,Notes,GHS")] Chemical chemical)
+        public async Task<IActionResult> Edit(int id, [Bind("ID,Name,Symbol,Notes,SelectedFruits")] Chemical chemical)
         {
             if (id != chemical.ID)
             {

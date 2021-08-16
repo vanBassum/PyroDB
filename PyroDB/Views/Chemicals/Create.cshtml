@@ -24,14 +24,29 @@
                 <span asp-validation-for="Symbol" class="text-danger"></span>
             </div>
             <div class="form-group">
+
+                @using (Html.BeginForm("Index", "Home"))
+                {
+                    foreach (var item in Model.AvailableGHS)
+                    {
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox"
+                                       name="SelectedFruits"
+                                       value="@item.Value"
+                                       @if (Model.SelectedGHS != null) @if (Model.SelectedGHS.Contains(item.Value)) { <text> checked </text> } /> @item.Text
+                                </label>
+                            </div>
+                        }
+                        <div class="form-group text-center">
+                            <input type="submit" class="btn btn-primary" value="Submit" />
+                        </div>
+                    }
+            </div>
+            <div class="form-group">
                 <label asp-for="Notes" class="control-label"></label>
                 <input asp-for="Notes" class="form-control" />
                 <span asp-validation-for="Notes" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="GHS" class="control-label"></label>
-                <input asp-for="GHS" class="form-control" />
-                <span asp-validation-for="GHS" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />

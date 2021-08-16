@@ -39,13 +39,9 @@
                 @{foreach (GHSSymbols flag in Enum.GetValues(item.GHS.GetType()).Cast<Enum>().Where(item.GHS.HasFlag))
                     {
                         var img = "images\\" + flag.ToString() + ".svg";
-
-                        <img src="@img" alt="Sample Image" width="64px" />
-
+                        <img src="@img" alt="@flag.ToString()" width="64px" />
                     }
                 }
-
-
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
