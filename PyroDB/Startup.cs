@@ -27,6 +27,13 @@ namespace PyroDB
         {
             services.AddControllersWithViews();
             services.AddDbContext<PyroDBContext>(options => options.UseSqlite(Configuration.GetConnectionString("PyroDBContext")));
+            services.AddDistributedMemoryCache();
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromSeconds(10);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
 
             //services.AddDbContext<PyroDBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("PyroDBContext")));
         }
