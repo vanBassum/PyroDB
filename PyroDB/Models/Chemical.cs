@@ -43,7 +43,6 @@ namespace PyroDB.Models
             }
         }
 
-
         public static IList<SelectListItem> GetAvailableGHS()
         {
             var result = new List<SelectListItem>();

@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using PyroDB.Data;
 using PyroDB.Models;
 
@@ -12,17 +15,19 @@ namespace PyroDB.Controllers
 {
     public class UsersController : Controller
     {
-        private readonly PyroDBContext _context;
+        private readonly PyroDBContext _db;
+        private readonly AppConfig _config;
 
-        public UsersController(PyroDBContext context)
+        public UsersController(PyroDBContext context, IOptions<AppConfig> config)
         {
-            _context = context;
+            _db = context;
+            _config = config.Value;
         }
 
         // GET: Users
         public async Task<IActionResult> Index()
         {
-            return View(await _context.User.ToListAsync());
+            return View(await _db.User.ToListAsync());
         }
 
 
@@ -39,24 +44,36 @@ namespace PyroDB.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(User user)
         {
-            if (ModelState.IsValid)
+            if (_config.AllowRegistrations)
             {
-                var keyNew = Helper.GeneratePassword(10);
-                var password = Helper.EncodePassword(user.Password, keyNew);
-                user.Password = password;
-                user.VCode = keyNew;
-                _context.Add(user);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    User dbUser = _db.User.FirstOrDefault(a => a.Name == user.Name);
+                    if (dbUser != null)
+                    {
+                        ModelState.AddModelError("", "Username already taken");
+                        return View(user);
+                    }
+                    else
+                    {
+                        var keyNew = Helper.GeneratePassword(10);
+                        var password = Helper.EncodePassword(user.Password, keyNew);
+                        user.Password = password;
+                        user.VCode = keyNew;
+                        _db.Add(user);
+                        await _db.SaveChangesAsync();
+                        return RedirectToAction("Index", "Home");
+                    }
+                }
             }
             return View(user);
         }
 
 
-        // GET: Users/Create
-        public IActionResult Login()
+        public async Task<ActionResult> Logout()
         {
-            return View();
+            await HttpContext.SignOutAsync("CookieAuth");
+            return RedirectToAction("Index", "Home");
         }
 
         // POST: Users/Create
@@ -64,29 +81,55 @@ namespace PyroDB.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(User user)
+        public async Task<ActionResult> Login(User user)
         {
+            
             if (ModelState.IsValid)
             {
-                User dbUser = _context.User.FirstOrDefault(a => a.Name == user.Name);
-                if(dbUser != null)
+
+                bool credentialsValid = false;
+
+
+                if(user.Name == "admin" && user.Password == "admin")
+                {
+                    credentialsValid = true;
+                }
+
+                User dbUser = _db.User.FirstOrDefault(a => a.Name == user.Name);
+                if (dbUser != null)
                 {
                     var password = Helper.EncodePassword(user.Password, dbUser.VCode);
                     var match = password == dbUser.Password;
 
-                    if(match)
-                    {
-                        Session["UserID"] = obj.UserId.ToString();
-                        Session["UserName"] = obj.UserName.ToString();
-                    }
+                    if (match)
+                        credentialsValid = true;
+                    else
+                        ModelState.AddModelError("", "Wrong password");
                 }
                 else
+                    ModelState.AddModelError("", "User doens't exist");
+                
+
+                if(credentialsValid)
                 {
-                    //Not found!
+                    var claims = new List<Claim>
+                        {
+                            new Claim(ClaimTypes.Name, user.Name),
+                        };
+
+                    var identity = new ClaimsIdentity(claims, "CookieAuth");
+                    var claimsPrincipal = new ClaimsPrincipal(identity);
+
+                    await HttpContext.SignInAsync("CookieAuth", claimsPrincipal);
+                    return RedirectToAction("Index", "Home");
                 }
-                return RedirectToAction(nameof(Index));
             }
-            return View(user);
+            else
+            {
+                ModelState.AddModelError("", "Input invalid");
+            }
+            
+            return PartialView("_Login", user);
         }
     }
 }

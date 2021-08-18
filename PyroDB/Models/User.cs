@@ -13,8 +13,13 @@ namespace PyroDB.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
+        [Required]
         public string Name { get; set; }
+        [Required]
         public string Password { get; set; }
         public string VCode { get; set; }
+
+        [NotMapped]
+        public bool AllowRegistrations { get; set; }
     }
 }

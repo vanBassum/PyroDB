@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using PyroDB.Data;
+using Microsoft.AspNetCore.Identity;
 
 namespace PyroDB
 {
@@ -27,13 +28,48 @@ namespace PyroDB
         {
             services.AddControllersWithViews();
             services.AddDbContext<PyroDBContext>(options => options.UseSqlite(Configuration.GetConnectionString("PyroDBContext")));
-            services.AddDistributedMemoryCache();
-            services.AddSession(options =>
+            /*
+            services.Configure<IdentityOptions>(options =>
             {
-                options.IdleTimeout = TimeSpan.FromSeconds(10);
-                options.Cookie.HttpOnly = true;
-                options.Cookie.IsEssential = true;
+                // Password settings.
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequiredLength = 6;
+                options.Password.RequiredUniqueChars = 1;
+
+                // Lockout settings.
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.AllowedForNewUsers = true;
+
+                // User settings.
+                options.User.AllowedUserNameCharacters =
+                "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+                options.User.RequireUniqueEmail = false;
             });
+
+            services.ConfigureApplicationCookie(options =>
+            {
+                // Cookie settings
+                options.Cookie.HttpOnly = true;
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+
+                options.LoginPath = "/Identity/Account/Login";
+                options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+                options.SlidingExpiration = true;
+            });
+            */
+
+            services.AddAuthentication("CookieAuth").AddCookie("CookieAuth", options => {
+                options.Cookie.Name = "CookieAuth";
+            });
+
+            var appConfigSection = Configuration.GetSection("AppConfig");
+            var appConfig = services.Configure<AppConfig>(appConfigSection);
+            services.AddSingleton(appConfig);
+        
 
             //services.AddDbContext<PyroDBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("PyroDBContext")));
         }
@@ -56,6 +92,7 @@ namespace PyroDB
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

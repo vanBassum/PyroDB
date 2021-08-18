@@ -1,31 +1,22 @@
 ﻿@model PyroDB.Models.User
 
-@{
-    ViewData["Title"] = "Create";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
 
-<h1>Create</h1>
 
-<h4>User</h4>
-<hr />
+<h1>Register</h1>
+<hr/>
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Register">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password" class="form-control" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
+
+        <form asp-controller="Users" asp-action="Register" method="post" accept-charset="UTF-8">
+            <input id="user_username" style="margin-bottom: 15px;" type="text" asp-for="Name" placeholder="Username" size="30" />
+            <input id="user_password" style="margin-bottom: 15px;" type="password" asp-for="Password" size="30" placeholder="Password" />
+
+            @*
+                <input id="user_remember_me" style="float: left; margin-right: 10px;" type="checkbox" name="user[remember_me]" value="1" />
+            <label class="string optional" for="user_remember_me"> Remember me</label>
+            *@
+
+            <input class="btn btn-primary" style="margin-bottom: 15px; clear: left; width: 100%; height: 32px; font-size: 13px;" type="submit" name="commit" value="Sign In" />
         </form>
     </div>
 </div>
