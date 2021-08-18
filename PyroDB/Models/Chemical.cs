@@ -17,42 +17,19 @@ namespace PyroDB.Models
         public GHSSymbols GHS { get; set; }
 
 
-
         [NotMapped]
-        public IList<string> SelectedGHS
+        public IList<GHSSymbols> CheckedSymbols { get; set; }
+
+
+        
+
+
+
+        public static IList<GHSSymbols> GetAvailableGHS()
         {
-            get
-            {
-                var result = new List<string>();
-                foreach (GHSSymbols flag in Enum.GetValues(typeof(GHSSymbols)))
-                {
-                    if (GHS.HasFlag(flag))
-                        result.Add(flag.ToString());
-                }
-                return result;
-            }
-
-            set
-            {
-                GHS = 0;
-                foreach (GHSSymbols flag in Enum.GetValues(typeof(GHSSymbols)))
-                {
-                    if (value.Contains(flag.ToString()))
-                        GHS |= flag;
-                }
-            }
+            return (GHSSymbols[])Enum.GetValues(typeof(GHSSymbols));
         }
-
-        public static IList<SelectListItem> GetAvailableGHS()
-        {
-            var result = new List<SelectListItem>();
-
-            foreach (var flag in Enum.GetValues(typeof(GHSSymbols)))
-            {
-                result.Add(new SelectListItem() { Text = flag.ToString(), Value = flag.ToString() });
-            }
-            return result;
-        }
+        
     }
 
 

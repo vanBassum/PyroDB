@@ -18,8 +18,16 @@ namespace PyroDB.Models
         [Required]
         public string Password { get; set; }
         public string VCode { get; set; }
+        public string Role { get; set; }
 
         [NotMapped]
         public bool AllowRegistrations { get; set; }
     }
+
+
+    public static class Roles
+    {
+        public const string Admin = "Admin";
+    }
+
 }

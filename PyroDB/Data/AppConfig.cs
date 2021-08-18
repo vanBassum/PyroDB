@@ -6,4 +6,5 @@ namespace PyroDB.Data
     {
         public bool AllowRegistrations { get; set; }
     }
+
 }

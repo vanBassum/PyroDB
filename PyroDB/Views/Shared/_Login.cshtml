@@ -1,19 +1,16 @@
-@model PyroDB.Models.User
+
 
 <ul class="navbar-nav flex-grow-1">
     @if (User.Identity.IsAuthenticated)
     {
         
-    <li class="nav-item">
-    <li class="nav-link text-dark" asp-controller="Users" asp-action="Logout">Welcome @User.Identity.Name</li>
-        
-    </li>
-
-    <li class="divider-vertical"></li>
-        
-    <li class="nav-item">
-    <a class="nav-link text-dark" asp-controller="Users" asp-action="Logout">Logout</a>
-    </li>
+        <li class="nav-item">
+            <li class="nav-link text-dark">Welcome @User.Identity.Name</li>
+        </li>
+        <li class="divider-vertical"></li>
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-controller="Users" asp-action="Logout">Logout</a>
+        </li>
 
     }
     else
@@ -22,15 +19,13 @@
         <li class="nav-item">
             <a class="nav-link text-dark" asp-controller="Users" asp-action="Register">Sign up</a>
         </li>
-
         <li class="divider-vertical"></li>
-
         <li class="dropdown">
             <a class="nav-link text-dark dropdown-toggle" href="#" data-toggle="dropdown">Sign In <strong class="caret"></strong></a>
             <div class="dropdown-menu" style="padding: 15px; padding-bottom: 0px;">
                 <form asp-controller="Users" asp-action="Login" method="post" accept-charset="UTF-8">
-                    <input id="user_username" style="margin-bottom: 15px;" type="text" asp-for="Name" placeholder="Username" size="30" />
-                    <input id="user_password" style="margin-bottom: 15px;" type="password" asp-for="Password" size="30" placeholder="Password" />
+                    <input id="user_username" style="margin-bottom: 15px;" type="text" name="Name" placeholder="Username" size="30" />
+                    <input id="user_password" style="margin-bottom: 15px;" type="password" name="Password" size="30" placeholder="Password" />
 
                     @*
                             <input id="user_remember_me" style="float: left; margin-right: 10px;" type="checkbox" name="user[remember_me]" value="1" />
