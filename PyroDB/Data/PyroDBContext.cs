@@ -18,5 +18,6 @@ namespace PyroDB.Data
 
         public DbSet<PyroDB.Models.Chemical> Chemical { get; set; }
         public DbSet<PyroDB.Models.User> User { get; set; }
+        public DbSet<PyroDB.Models.Label> Label { get; set; }
     }
 }

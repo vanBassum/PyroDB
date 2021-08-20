@@ -117,7 +117,8 @@ namespace PyroDB.Controllers
                     var claims = new List<Claim>
                         {
                             new Claim(ClaimTypes.Name, user.Name),
-                            new Claim(ClaimTypes.Role, user.Role)
+                            new Claim(ClaimTypes.Role, user.Role),
+                            new Claim(ClaimTypes.NameIdentifier, user.ID.ToString()),
                         };
 
                     var identity = new ClaimsIdentity(claims, "CookieAuth");

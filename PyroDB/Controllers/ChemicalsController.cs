@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -39,7 +40,13 @@ namespace PyroDB.Controllers
             {
                 return NotFound();
             }
-
+            else
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // will give the user's userId
+                var userName = User.FindFirstValue(ClaimTypes.Name); // will give the user's userName
+                int userIdInt = int.Parse(userId);
+                chemical.Labels = await _db.Label.Where(a => a.UserID == userIdInt).ToListAsync();
+            }
             return View(chemical);
         }
 

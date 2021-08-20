@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PyroDB.Models
 {
+
     public class Chemical
     {
         [Key]
@@ -20,8 +21,17 @@ namespace PyroDB.Models
         [NotMapped]
         public IList<GHSSymbols> CheckedSymbols { get; set; }
 
+        [NotMapped]
+        public IList<Label> Labels { get; set; }
 
-        
+        public Dictionary<string, string> GetProperties()
+        {
+            return new Dictionary<string, string>()
+            {
+                { "Name", Name }
+            };
+
+        }
 
 
 
