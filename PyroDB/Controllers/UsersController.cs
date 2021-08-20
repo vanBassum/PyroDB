@@ -88,16 +88,19 @@ namespace PyroDB.Controllers
             {
 
                 bool credentialsValid = false;
+                User dbUser = _db.User.FirstOrDefault(a => a.Name == user.Name);
 
 #if DEBUG
-                if(user.Name == "admin" && user.Password == "admin")
+                if (user.Name == "admin" && user.Password == "admin")
                 {
                     credentialsValid = true;
-                    user.Role = Roles.Admin;
+                    dbUser.Role = Roles.Admin;
+                    dbUser.Name = "admin";
+
                 }
 #endif
 
-                User dbUser = _db.User.FirstOrDefault(a => a.Name == user.Name);
+                
                 if (dbUser != null)
                 {
                     var password = Helper.EncodePassword(user.Password, dbUser.VCode);
@@ -116,9 +119,12 @@ namespace PyroDB.Controllers
                 {
                     var claims = new List<Claim>
                         {
-                            new Claim(ClaimTypes.Name, user.Name),
-                            new Claim(ClaimTypes.Role, user.Role)
+                            new Claim(ClaimTypes.Name, dbUser.Name)
+                            
                         };
+
+                    if (!String.IsNullOrEmpty(dbUser.Role))
+                        claims.Add(new Claim(ClaimTypes.Role, dbUser.Role));
 
                     var identity = new ClaimsIdentity(claims, "CookieAuth");
                     var claimsPrincipal = new ClaimsPrincipal(identity);

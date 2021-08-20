@@ -27,7 +27,26 @@ namespace PyroDB
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            services.AddDbContext<PyroDBContext>(options => options.UseSqlite(Configuration.GetConnectionString("PyroDBContext")));
+
+            string fullConStr = Configuration.GetConnectionString("PyroDBContext");
+            int ind = fullConStr.IndexOf(';');
+            string dbType = fullConStr.Substring(0, ind);
+            string conStr = fullConStr.Substring(ind+1);
+
+            
+            switch (dbType.ToLower())
+            {
+                case "sqlite":
+                    services.AddDbContext<PyroDBContext>(options => options.UseSqlite(conStr));
+                    break;
+                case "mysql":
+                    services.AddDbContext<PyroDBContext>(options => options.UseMySQL(conStr));
+                    break;
+            }
+            
+
+
+            
             /*
             services.Configure<IdentityOptions>(options =>
             {

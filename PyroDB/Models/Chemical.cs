@@ -21,10 +21,6 @@ namespace PyroDB.Models
         public IList<GHSSymbols> CheckedSymbols { get; set; }
 
 
-        
-
-
-
         public static IList<GHSSymbols> GetAvailableGHS()
         {
             return (GHSSymbols[])Enum.GetValues(typeof(GHSSymbols));
