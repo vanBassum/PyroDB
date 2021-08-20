@@ -81,21 +81,22 @@ namespace PyroDB.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Login(User user)
+        public async Task<ActionResult> Login(User inputUser)
         {
             
             if (ModelState.IsValid)
             {
 
                 bool credentialsValid = false;
-                User dbUser = _db.User.FirstOrDefault(a => a.Name == user.Name);
+                User dbUser = _db.User.FirstOrDefault(a => a.Name == inputUser.Name);
 
 #if DEBUG
-                if (user.Name == "admin" && user.Password == "admin")
+                if (inputUser.Name == "admin" && inputUser.Password == "admin")
                 {
                     credentialsValid = true;
                     dbUser.Role = Roles.Admin;
                     dbUser.Name = "admin";
+                    dbUser.ID = 0;
 
                 }
 #endif
@@ -103,7 +104,7 @@ namespace PyroDB.Controllers
                 
                 if (dbUser != null)
                 {
-                    var password = Helper.EncodePassword(user.Password, dbUser.VCode);
+                    var password = Helper.EncodePassword(inputUser.Password, dbUser.VCode);
                     var match = password == dbUser.Password;
 
                     if (match)
@@ -119,8 +120,8 @@ namespace PyroDB.Controllers
                 {
                     var claims = new List<Claim>
                         {
-                            new Claim(ClaimTypes.Name, user.Name),
-                            new Claim(ClaimTypes.NameIdentifier, user.ID.ToString()),
+                            new Claim(ClaimTypes.Name, dbUser.Name),
+                            new Claim(ClaimTypes.NameIdentifier, dbUser.ID.ToString()),
                         };
 
                     if (!String.IsNullOrEmpty(dbUser.Role))
@@ -138,7 +139,7 @@ namespace PyroDB.Controllers
                 ModelState.AddModelError("", "Input invalid");
             }
             
-            return PartialView("_Login", user);
+            return PartialView("_Login", inputUser);
         }
     }
 }

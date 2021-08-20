@@ -44,8 +44,12 @@ namespace PyroDB.Controllers
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // will give the user's userId
                 var userName = User.FindFirstValue(ClaimTypes.Name); // will give the user's userName
-                int userIdInt = int.Parse(userId);
-                chemical.Labels = await _db.Label.Where(a => a.UserID == userIdInt).ToListAsync();
+
+                if(int.TryParse(userId, out int userIdInt))
+                {
+                    chemical.Labels = await _db.Label.Where(a => a.UserID == userIdInt).ToListAsync();
+                }
+                
             }
             return View(chemical);
         }
