@@ -84,6 +84,10 @@
             }
         }
 
+        labelData.onchange = function () {
+            loadLabelFromWeb();
+        }
+
         function getAddressLabelXml()
         {
             var labelXml = atob(labelData.value);
@@ -97,8 +101,12 @@
 
             $.each(proptable, function (key, value)
             {
-                alert(key + '   ' + value);
-                dymoLabel.setObjectText("Name", "as");
+                try {
+                    label.setObjectText(key, value);
+                }
+                catch (e) {
+                }
+
             });
 
 

@@ -28,7 +28,10 @@ namespace PyroDB.Models
         {
             return new Dictionary<string, string>()
             {
-                { "Name", Name }
+                { "Name", Name },
+                { "Symbol", Symbol },
+                //{ "Description", Description},
+                //{ "GHSimg", }
             };
 
         }
