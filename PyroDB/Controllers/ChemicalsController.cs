@@ -1,14 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting.Internal;
 using PyroDB.Data;
 using PyroDB.Models;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 
 namespace PyroDB.Controllers
 {
@@ -16,9 +23,14 @@ namespace PyroDB.Controllers
     {
         private readonly PyroDBContext _db;
 
-        public ChemicalsController(PyroDBContext context)
+        private IWebHostEnvironment _env;
+
+
+
+        public ChemicalsController(PyroDBContext context, IWebHostEnvironment env)
         {
             _db = context;
+            _env = env;
         }
 
         // GET: Chemicals
@@ -27,6 +39,38 @@ namespace PyroDB.Controllers
         {
             return View(await _db.Chemical.ToListAsync());
         }
+
+        string GetGHSImageAsBase64(Chemical chem)
+        {
+            string result = "";
+            List<string> imgs = new List<string>();
+            foreach (var v in Chemical.GetAvailableGHS())
+            {
+                if (chem.GHS.HasFlag(v))
+                {
+                    string imgFile = Path.Combine(_env.WebRootPath, "images\\" + v.ToString() + ".png");
+                    imgs.Add(imgFile);
+                }
+            }
+
+            using (Image<Rgba32> outputImage = new Image<Rgba32>(imgs.Count * 256, 256))
+            {
+                for (int i = 0; i < imgs.Count; i++)
+                {
+                    string imgFile = imgs[i];
+                    using (Image<Rgba32> img1 = Image.Load<Rgba32>(imgFile))
+                    {
+                        outputImage.Mutate(o => o.DrawImage(img1, new Point(i * 256, 0), 1f));
+                    }
+                }
+                //outputImage.SaveAsPng(Path.Combine(_env.WebRootPath, "plep.png"));
+
+                result = outputImage.ToBase64String(PngFormat.Instance);
+            }
+
+            return result.Substring(result.IndexOf(',') + 1); ;
+        }
+
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -44,12 +88,17 @@ namespace PyroDB.Controllers
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // will give the user's userId
                 var userName = User.FindFirstValue(ClaimTypes.Name); // will give the user's userName
+         
 
-                if(int.TryParse(userId, out int userIdInt))
+                if (int.TryParse(userId, out int userIdInt))
                 {
                     chemical.Labels = await _db.Label.Where(a => a.UserID == userIdInt).ToListAsync();
                 }
-                
+
+                chemical.CombinedGHSImageAsBase64 = GetGHSImageAsBase64(chemical);
+
+
+
             }
             return View(chemical);
         }

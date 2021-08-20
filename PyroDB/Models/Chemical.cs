@@ -1,4 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -24,11 +29,20 @@ namespace PyroDB.Models
         [NotMapped]
         public IList<Label> Labels { get; set; }
 
+        [NotMapped]
+        public string CombinedGHSImageAsBase64 { get; set; }
+
+
+
+
         public Dictionary<string, string> GetProperties()
         {
             return new Dictionary<string, string>()
             {
-                { "Name", Name }
+                { "Name", Name },
+                { "Symbol", Symbol },
+                //{ "Description", Description},
+                { "GHSimg", CombinedGHSImageAsBase64}
             };
 
         }

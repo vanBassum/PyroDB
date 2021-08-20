@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -57,6 +58,12 @@ namespace PyroDB.Data
         {
             if (ModelState.IsValid)
             {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // will give the user's userId
+                if (int.TryParse(userId, out int userIdInt))
+                {
+                    label.UserID = userIdInt;
+                }
+                
                 _context.Add(label);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
