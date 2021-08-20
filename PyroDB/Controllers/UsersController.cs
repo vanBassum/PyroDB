@@ -119,8 +119,8 @@ namespace PyroDB.Controllers
                 {
                     var claims = new List<Claim>
                         {
-                            new Claim(ClaimTypes.Name, dbUser.Name)
-                            
+                            new Claim(ClaimTypes.Name, user.Name),
+                            new Claim(ClaimTypes.NameIdentifier, user.ID.ToString()),
                         };
 
                     if (!String.IsNullOrEmpty(dbUser.Role))
