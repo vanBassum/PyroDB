@@ -18,10 +18,12 @@ namespace PyroDB.Application.Synchronizers.PyroData
     {
         private readonly PyroDataCrawler _crawler;
         private readonly ApplicationDbContext _context;
+        private readonly ILogger _logger;
 
-        public PyroDataRecipeSynchronizer(ApplicationDbContext context, IHttpClientFactory httpClientFactory)
+        public PyroDataRecipeSynchronizer(ApplicationDbContext context, IHttpClientFactory httpClientFactory, ILogger<PyroDataRecipeSynchronizer> logger)
         {
             _context = context;
+            _logger = logger;
             _crawler = new PyroDataCrawler(httpClientFactory);
         }
 
@@ -78,10 +80,12 @@ namespace PyroDB.Application.Synchronizers.PyroData
 
                 if(dbIngredient.Quantity == null)
                 {
-                    if (int.TryParse(pdIngredient.Quantity, out int quantity))
+                    string? filtered = GetNumbers(pdIngredient.Quantity);
+
+                    if (float.TryParse(filtered, out float quantity))
                         dbIngredient.Quantity = quantity;
                     else
-                        Debug.WriteLine($"Quantity counl't be parsed '{pdIngredient.Quantity}'");
+                        _logger.LogWarning($"Quantity counl't be parsed '{pdIngredient.Quantity}'");
                 }
 
                 if (dbIngredient.Chemical == null)
@@ -95,6 +99,14 @@ namespace PyroDB.Application.Synchronizers.PyroData
             }
             await _context.SaveChangesAsync();
         }
+
+        private static string? GetNumbers(string? input)
+        {
+            if (input == null)
+                return null;
+            return new string(input.Where(c => char.IsDigit(c) || c == '.').ToArray());
+        }
+
 
         private bool CheckIfRecipeIsComplete(Recipe? recipe)
         {
