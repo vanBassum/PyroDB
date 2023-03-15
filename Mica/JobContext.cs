@@ -40,19 +40,19 @@ namespace Mica
             };
             Task = Task.Run(async () =>
             {
-                try
-                {
+                //try
+                //{
                     using var scope = serviceProvider.CreateScope();
                     if (ActivatorUtilities.CreateInstance(scope.ServiceProvider, jobType) is IJob job)
                     {
                         Job = job;
                         await Job.Work(progress, cancellationTokenSource.Token);
                     }
-                }
-                catch(Exception ex)
-                {
-
-                }
+                //}
+                //catch(Exception ex)
+                //{
+                //    Console.WriteLine(ex.ToString());
+                //}
                 OnCompleted?.Invoke(this, EventArgs.Empty);
             });
         }

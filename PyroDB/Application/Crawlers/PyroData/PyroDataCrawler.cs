@@ -16,17 +16,18 @@ namespace PyroDB.Application.Crawlers.PyroData
     public class PyroDataCrawler
     {
         private readonly string baseUrl = "https://pyrodata.com";
-        private readonly ApplicationDbContext _context;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly HttpClient _httpClient;
+        private readonly IServiceProvider _serviceProvider;
 
-
-        public PyroDataCrawler(ApplicationDbContext context, IHttpClientFactory httpClientFactory)
+        public PyroDataCrawler(IServiceProvider serviceProvider, IHttpClientFactory httpClientFactory)
         {
-            _context = context;
+            _serviceProvider = serviceProvider;
             _httpClientFactory = httpClientFactory;
             _httpClient = _httpClientFactory.CreateClient();
             _httpClient.BaseAddress = new Uri(baseUrl);
+
+
         }
 
         public async Task SyncAll(IProgress<double> progress, CancellationToken token = default)
@@ -47,14 +48,64 @@ namespace PyroDB.Application.Crawlers.PyroData
             int count = recipeLinks.Count;
             for(int i =0; i<count; i++)
             {
-                var recipe = GetRecipe(recipeLinks[i]);
+                using (var scope = _serviceProvider.CreateScope())
+                {
+                    var context = _serviceProvider.GetService<ApplicationDbContext>();
+                    if (context != null)
+                    {
+                        var recipe = await GetRecipe(context, recipeLinks[i]);
+                        if (recipe != null)
+                        { 
+                            if (!await SyncRecipe(context, recipe))
+                            {
+                                await context.SaveChangesAsync();
+                            }
+                            else
+                            {
+                                //Duplicate
+                            }
+                        }
+                    }
+                }
+
                 token.ThrowIfCancellationRequested();
                 progress.Report((double)i / count);
             }
         }
 
+        async Task<bool> SyncRecipe(ApplicationDbContext context, Recipe recipe)
+        {
+            var dbRecipe = await FindByDataSource(context, recipe);
+            if (dbRecipe == null)
+            { 
+                
+            }
 
-        private async Task<Recipe?> GetRecipe(string url)
+            if ( != null)
+                return true;
+            return false;
+        }
+
+
+        async Task<Recipe?> FindByDataSource(ApplicationDbContext context, Recipe recipe)
+        {
+            DataSources? s = recipe.DataSourceInfo?.DataSource;
+            string? sid = recipe.DataSourceInfo?.SourceId;
+            if (s != null && sid != null)
+            {
+                var foundByDataSource = from r in context.Recipes
+                                        where r.DataSourceInfo != null
+                                        && r.DataSourceInfo.DataSource == s
+                                        && r.DataSourceInfo.SourceId == sid
+                                        select r;
+                return await foundByDataSource.FirstOrDefaultAsync();
+            }
+            return null;
+        }
+
+
+
+        private async Task<Recipe?> GetRecipe(ApplicationDbContext context, string url)
         {
             var document = await GetDocument(url);
             if (document != null)
@@ -68,14 +119,15 @@ namespace PyroDB.Application.Crawlers.PyroData
                         SourceId = url,
                     },
                     Name = titleNode.InnerText,
-                    Ingredients = await FindIngredients(document)
+                    Ingredients = await FindIngredients(context, document)
                 };
+                context.Recipes.Add(result);
                 return result;
             }
             return null;
         }
 
-        private async Task<List<Ingredient>> FindIngredients(HtmlDocument document)
+        private async Task<List<Ingredient>> FindIngredients(ApplicationDbContext context, HtmlDocument document)
         {
             List<Ingredient> result = new List<Ingredient>();
             var nodes = document.DocumentNode.Descendants("div").Where(a => a.Attributes["typeof"]?.Value?.Contains("schema:Ingredient") == true);
@@ -84,24 +136,31 @@ namespace PyroDB.Application.Crawlers.PyroData
                 var nameNode = node.Descendants("span").Where(a => a.Attributes["class"].Value.Contains("ingredient-name")).FirstOrDefault();
                 var quantityNode = node.Descendants("div").Where(a => a.Attributes["class"].Value.Contains("quantity-unit")).FirstOrDefault();
                 var linkNode = nameNode?.Descendants("a").FirstOrDefault();
-                Ingredient ingredient = new Ingredient();
+                Ingredient ingredient = new Ingredient()
+                {
+                    Name = nameNode?.InnerText,
+                    Quantity = quantityNode?.InnerText,
+                };
                 
-                if(int.TryParse(GetNumbers(quantityNode?.InnerText), out int quantity))
-                    ingredient.Amount = quantity;
-
-                ingredient.Name = nameNode?.InnerText;
                 var link = linkNode?.Attributes["href"]?.Value;
                 if (link != null)
                 {
-                    ingredient.Chemical = await GetChemical(link);
+                    ingredient.Chemical = await GetChemical(context, link);
                 }
+                context.Ingredients.Add(ingredient);
                 result.Add(ingredient);
             }
             return result;
         }
 
+        private static string? GetNumbers(string? input)
+        {
+            if (input == null)
+                return null;
+            return new string(input.Where(c => char.IsDigit(c) || c == '.').ToArray());
+        }
 
-        private async Task<Chemical?> GetChemical(string url)
+        private async Task<Chemical?> GetChemical(ApplicationDbContext context, string url)
         {
             //first try to find if the chemical already exists, otherwise create new one. (Match by formula)
             var document = await GetDocument(url);
@@ -113,28 +172,28 @@ namespace PyroDB.Application.Crawlers.PyroData
                 string? formula = formulaNode2?.InnerText;
                 if (formula != null)
                 {
-                    try
-                    {
-                        var existing = await _context.Chemicals.FirstOrDefaultAsync(a => a.Formula == formula);
-                        if (existing != null)
-                            return existing;
-                        //Create new 
-                        Chemical chemical = new Chemical()
-                        {
-                            Formula = formula,
-                            Name = titleNode?.InnerText,
-                            DataSourceInfo = new DataSourceInfo()
-                            {
-                                DataSource = DataSources.PyroData,
-                                SourceId = url,
-                            }
-                        };
-                        return chemical;
-                    }
-                    catch(Exception ex)
-                    {
+              
+                    var existing = await context.Chemicals.FirstOrDefaultAsync(a => a.Formula == formula);
+                    if (existing != null)
+                        return existing;
 
-                    }
+                    var existing2 = context.ChangeTracker.Entries<Chemical>().FirstOrDefault(a => a.Entity.Formula == formula);
+                    if (existing2 != null)
+                        return existing2.Entity;
+                    //Create new 
+                    Chemical chemical = new Chemical()
+                    {
+                        Formula = formula,
+                        Name = titleNode?.InnerText,
+                        DataSourceInfo = new DataSourceInfo()
+                        {
+                            DataSource = DataSources.PyroData,
+                            SourceId = url,
+                        }
+                    };
+                    context.Chemicals.Add(chemical);
+                    return chemical;
+
                 }
             }
             return null;
@@ -142,12 +201,7 @@ namespace PyroDB.Application.Crawlers.PyroData
 
 
 
-        private static string? GetNumbers(string? input)
-        {
-            if (input == null)
-                return null;
-            return new string(input.Where(c => char.IsDigit(c)).ToArray());
-        }
+
 
         private async Task<List<string>> FindRecipeLinks(string url)
         {
