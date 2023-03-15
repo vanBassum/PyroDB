@@ -102,10 +102,11 @@ namespace PyroDB.Application.Jobs.PyroData
             var document = await GetDocumentAsync(url, token);
             if (document != null)
             {
-                var nodes = document.DocumentNode.Descendants("a").Where(n => n.Attributes["href"]?.Value?.Contains("/chemicals/") == true);
+                var nodes = document.DocumentNode.Descendants("td").Where(a => a.Attributes["class"]?.Value?.Contains("chemi-table") == true); 
                 foreach (var node in nodes)
                 {
-                    var test = node.Attributes["href"]?.Value;
+                    var d = node.Descendants("a").FirstOrDefault(n => n.Attributes["href"]?.Value?.Contains("/chemicals/") == true);
+                    var test = d?.Attributes["href"]?.Value;
                     if (test != null)
                         result.Add(test);
                 }

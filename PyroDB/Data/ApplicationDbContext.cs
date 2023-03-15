@@ -1,15 +1,19 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using PyroDB.Models;
+using PyroDB.Services;
 using System.Runtime.CompilerServices;
 
 namespace PyroDB.Data
 {
     public class ApplicationDbContext : IdentityDbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        private readonly UserResolverService _userService;
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, UserResolverService userService)
             : base(options)
         {
+            _userService = userService;
         }
 
 
@@ -46,7 +50,9 @@ namespace PyroDB.Data
 
         private async Task SaveChangesHandler()
         {
-            foreach(var e in this.ChangeTracker.Entries<ITrackChanges>())
+            var v = _userService.GetCurrentUser();
+
+            foreach (var e in this.ChangeTracker.Entries<ITrackChanges>())
             {
                 if(e.State == EntityState.Added)
                 {

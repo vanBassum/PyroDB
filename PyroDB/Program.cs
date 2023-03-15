@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using PyroDB.Data;
 using PyroDB.Application.Jobs.PyroData;
 using PyroDB.Application.Jobs.PyroData.Synchronizers;
+using PyroDB.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,12 +29,12 @@ builder.Services.AddMicaScheduler(scheduler => scheduler
     .AddJob<SyncPyroDataRecipeJob>(job => job
         .AddTrigger(trg => trg
             .Interval = TimeSpan.FromDays(30)))
-    //.AddJob<SyncPyroDataChemicalJob>(job => job
-    //    .AddTrigger(trg => trg
-    //        .Interval = TimeSpan.FromDays(30)))
+    .AddJob<SyncPyroDataChemicalJob>(job => job
+        .AddTrigger(trg => trg
+            .Interval = TimeSpan.FromDays(30)))
     );
 
-
+builder.Services.AddTransient<UserResolverService>();
 
 
 var app = builder.Build();

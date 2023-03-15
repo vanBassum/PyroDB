@@ -46,7 +46,7 @@ namespace Mica
             {
                 if (trigger.GetTriggerMoment() <= DateTime.Now)
                 {
-                    var contexts = jobContexts.Where(a => a.Job.GetType() == trigger.JobType).ToArray();
+                    var contexts = jobContexts.Where(a => a.Job?.GetType() == trigger.JobType).ToArray();
                     bool stillRunning = false;
                     foreach (var ctx in contexts)
                     {
