@@ -2,13 +2,13 @@
 
 namespace PyroDB.Models
 {
-    public class Recipe
+    public class Recipe : ITrackChanges
     {
         [Key]
         public int Id { get; set; }
         public string? Name { get; set; }
         public virtual ICollection<Ingredient> Ingredients { get; set; } = new List<Ingredient>();
         public virtual DataSourceInfo? DataSourceInfo { get; set; }
+        public virtual ICollection<ChangeTrackerItem> Changes { get; set; } = new List<ChangeTrackerItem>();
     }
-
 }

@@ -1,9 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PyroDB.Application.Jobs.PyroData.Models;
 using PyroDB.Data;
 using PyroDB.Models;
 using System.Diagnostics;
 
-namespace PyroDB.Application.Synchronizers.PyroData
+namespace PyroDB.Application.Jobs.PyroData.Synchronizers
 {
     public class PyroDataChemicalSynchronizer
     {
@@ -42,7 +43,7 @@ namespace PyroDB.Application.Synchronizers.PyroData
                 dbChemical = new Chemical();
                 dbChemical.DataSourceInfo = new DataSourceInfo
                 {
-                    DataSource = DataSources.PyroData,
+                    DataSource = DataSources.PyroDataSynchronizer,
                     SourceId = pdChemical.Uri
                 };
                 await _context.AddAsync(dbChemical, token);
@@ -54,7 +55,6 @@ namespace PyroDB.Application.Synchronizers.PyroData
 
             if (dbChemical.Formula == null)
                 dbChemical.Formula = pdChemical.Formula;
-
             await _context.SaveChangesAsync();
         }
 
@@ -75,7 +75,7 @@ namespace PyroDB.Application.Synchronizers.PyroData
         {
             var foundByDataSource = from r in _context.Chemicals
                                     where r.DataSourceInfo != null
-                                    && r.DataSourceInfo.DataSource == DataSources.PyroData
+                                    && r.DataSourceInfo.DataSource == DataSources.PyroDataSynchronizer
                                     && r.DataSourceInfo.SourceId == chemicalUrl
                                     select r;
             return await foundByDataSource.FirstOrDefaultAsync(token);

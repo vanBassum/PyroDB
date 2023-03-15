@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PyroDB.Data;
 
@@ -10,9 +11,10 @@ using PyroDB.Data;
 namespace PyroDB.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230315152022_Changes")]
+    partial class Changes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -232,9 +234,6 @@ namespace PyroDB.Migrations
 
                     b.Property<int>("Source")
                         .HasColumnType("int");
-
-                    b.Property<DateTime?>("Timestamp")
-                        .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
 

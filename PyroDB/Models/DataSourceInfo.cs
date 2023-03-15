@@ -1,5 +1,4 @@
-﻿using PyroDB.Application.Synchronizers;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace PyroDB.Models
 {
@@ -10,5 +9,6 @@ namespace PyroDB.Models
         public DataSources DataSource { get; set; }
         public string? SourceId { get; set; }
     }
+
 
 }

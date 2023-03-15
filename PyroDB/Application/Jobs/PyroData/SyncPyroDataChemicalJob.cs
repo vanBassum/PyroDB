@@ -1,7 +1,7 @@
 ﻿using Mica;
-using PyroDB.Application.Synchronizers.PyroData;
+using PyroDB.Application.Jobs.PyroData.Synchronizers;
 
-namespace PyroDB.Application.Jobs
+namespace PyroDB.Application.Jobs.PyroData
 {
     [JobConcurrency(false)]
     public class SyncPyroDataChemicalJob : IJob

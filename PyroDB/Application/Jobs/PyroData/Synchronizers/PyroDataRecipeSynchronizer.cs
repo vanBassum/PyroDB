@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Net.Http.Headers;
 using MySqlX.XDevAPI.Common;
+using PyroDB.Application.Jobs.PyroData.Models;
 using PyroDB.Data;
 using PyroDB.Models;
 using System;
@@ -12,7 +13,7 @@ using System.Security.Policy;
 using System.Text.Json;
 using static System.Net.Mime.MediaTypeNames;
 
-namespace PyroDB.Application.Synchronizers.PyroData
+namespace PyroDB.Application.Jobs.PyroData.Synchronizers
 {
     public class PyroDataRecipeSynchronizer
     {
@@ -35,7 +36,7 @@ namespace PyroDB.Application.Synchronizers.PyroData
         public async Task HandleRecipe(string recipeUrl, CancellationToken token = default)
         {
             var dbRecipe = await GetRecipeFromDbAsync(recipeUrl, token);
-            if(!CheckIfRecipeIsComplete(dbRecipe))
+            if (!CheckIfRecipeIsComplete(dbRecipe))
             {
                 var pdRecipe = await _crawler.FetchRecipeAsync(recipeUrl, token);
                 if (pdRecipe != null)
@@ -48,12 +49,12 @@ namespace PyroDB.Application.Synchronizers.PyroData
         private async Task SyncRecipesAsync(RecipePD pdRecipe, Recipe? dbRecipe, CancellationToken token = default)
         {
             //Create recipe if it doens't yet exist
-            if(dbRecipe == null)
+            if (dbRecipe == null)
             {
                 dbRecipe = new Recipe();
                 dbRecipe.DataSourceInfo = new DataSourceInfo
                 {
-                    DataSource = DataSources.PyroData,
+                    DataSource = DataSources.PyroDataSynchronizer,
                     SourceId = pdRecipe.Uri
                 };
                 await _context.AddAsync(dbRecipe, token);
@@ -66,8 +67,8 @@ namespace PyroDB.Application.Synchronizers.PyroData
             foreach (var pdIngredient in pdRecipe.Ingredients)
             {
                 //Create new ingredient if not exists
-                var dbIngredient = dbRecipe.Ingredients.FirstOrDefault(i=>i.Name == pdIngredient.Name);
-                if(dbIngredient == null)
+                var dbIngredient = dbRecipe.Ingredients.FirstOrDefault(i => i.Name == pdIngredient.Name);
+                if (dbIngredient == null)
                 {
                     dbIngredient = new Ingredient();
                     await _context.AddAsync(dbIngredient, token);
@@ -78,7 +79,7 @@ namespace PyroDB.Application.Synchronizers.PyroData
                 if (dbIngredient.Name == null)
                     dbIngredient.Name = pdIngredient.Name;
 
-                if(dbIngredient.Quantity == null)
+                if (dbIngredient.Quantity == null)
                 {
                     string? filtered = GetNumbers(pdIngredient.Quantity);
 
@@ -110,7 +111,7 @@ namespace PyroDB.Application.Synchronizers.PyroData
 
         private bool CheckIfRecipeIsComplete(Recipe? recipe)
         {
-            if(recipe == null)
+            if (recipe == null)
                 return false;
 
             if (recipe.Ingredients.Any(i => i.Quantity == null || i.Chemical == null))
@@ -125,7 +126,7 @@ namespace PyroDB.Application.Synchronizers.PyroData
         {
             var foundByDataSource = from r in _context.Recipes
                                     where r.DataSourceInfo != null
-                                    && r.DataSourceInfo.DataSource == DataSources.PyroData
+                                    && r.DataSourceInfo.DataSource == DataSources.PyroDataSynchronizer
                                     && r.DataSourceInfo.SourceId == recipeUrl
                                     select r;
             return await foundByDataSource.FirstOrDefaultAsync(token);
@@ -136,7 +137,7 @@ namespace PyroDB.Application.Synchronizers.PyroData
         {
             var foundByDataSource = from r in _context.Chemicals
                                     where r.DataSourceInfo != null
-                                    && r.DataSourceInfo.DataSource == DataSources.PyroData
+                                    && r.DataSourceInfo.DataSource == DataSources.PyroDataSynchronizer
                                     && r.DataSourceInfo.SourceId == chemicalUrl
                                     select r;
             return await foundByDataSource.FirstOrDefaultAsync(token);

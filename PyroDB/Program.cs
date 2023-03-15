@@ -1,9 +1,9 @@
 using Mica;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using PyroDB.Application.Synchronizers.PyroData;
-using PyroDB.Application.Jobs;
 using PyroDB.Data;
+using PyroDB.Application.Jobs.PyroData;
+using PyroDB.Application.Jobs.PyroData.Synchronizers;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,6 +1,6 @@
 ﻿using HtmlAgilityPack;
 
-namespace PyroDB.Application.Synchronizers.PyroData
+namespace PyroDB.Application.Jobs.PyroData.Models
 {
     public class IngredientPD
     {

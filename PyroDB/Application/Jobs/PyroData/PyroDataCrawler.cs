@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
+using PyroDB.Application.Jobs.PyroData.Models;
 
-namespace PyroDB.Application.Synchronizers.PyroData
+namespace PyroDB.Application.Jobs.PyroData
 {
     public class PyroDataCrawler
     {

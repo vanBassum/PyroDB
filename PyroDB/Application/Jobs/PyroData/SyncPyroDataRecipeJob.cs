@@ -1,8 +1,8 @@
 ﻿using Mica;
-using PyroDB.Application.Synchronizers.PyroData;
+using PyroDB.Application.Jobs.PyroData.Synchronizers;
 using PyroDB.Data;
 
-namespace PyroDB.Application.Jobs
+namespace PyroDB.Application.Jobs.PyroData
 {
     [JobConcurrency(false)]
     public class SyncPyroDataRecipeJob : IJob
