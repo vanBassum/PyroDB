@@ -21,12 +21,20 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddHttpClient();
 
-builder.Services.AddScoped<PyroDataSynchronizer>();
+builder.Services.AddScoped<PyroDataRecipeSynchronizer>();
+builder.Services.AddScoped<PyroDataChemicalSynchronizer>();
 
 builder.Services.AddMicaScheduler(scheduler => scheduler
-    .AddJob<SyncPyroDataJob>(job => job
+    .AddJob<SyncPyroDataRecipeJob>(job => job
         .AddTrigger(trg => trg
-            .Interval = TimeSpan.FromDays(30))));
+            .Interval = TimeSpan.FromDays(30)))
+    //.AddJob<SyncPyroDataChemicalJob>(job => job
+    //    .AddTrigger(trg => trg
+    //        .Interval = TimeSpan.FromDays(30)))
+    );
+
+
+
 
 var app = builder.Build();
 

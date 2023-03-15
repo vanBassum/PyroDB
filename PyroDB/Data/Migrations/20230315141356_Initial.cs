@@ -6,7 +6,7 @@ using MySql.EntityFrameworkCore.Metadata;
 
 namespace PyroDB.Migrations
 {
-    public partial class CreateIdentitySchema : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -51,6 +51,21 @@ namespace PyroDB.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "DataSourceInfo",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    DataSource = table.Column<int>(type: "int", nullable: false),
+                    SourceId = table.Column<string>(type: "longtext", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DataSourceInfo", x => x.Id);
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
@@ -165,6 +180,74 @@ namespace PyroDB.Migrations
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
+            migrationBuilder.CreateTable(
+                name: "Chemicals",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(type: "longtext", nullable: true),
+                    Formula = table.Column<string>(type: "longtext", nullable: true),
+                    DataSourceInfoId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Chemicals", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Chemicals_DataSourceInfo_DataSourceInfoId",
+                        column: x => x.DataSourceInfoId,
+                        principalTable: "DataSourceInfo",
+                        principalColumn: "Id");
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Recipes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(type: "longtext", nullable: true),
+                    DataSourceInfoId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Recipes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Recipes_DataSourceInfo_DataSourceInfoId",
+                        column: x => x.DataSourceInfoId,
+                        principalTable: "DataSourceInfo",
+                        principalColumn: "Id");
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Ingredients",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(type: "longtext", nullable: true),
+                    Quantity = table.Column<int>(type: "int", nullable: true),
+                    ChemicalId = table.Column<int>(type: "int", nullable: true),
+                    RecipeId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Ingredients", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Ingredients_Chemicals_ChemicalId",
+                        column: x => x.ChemicalId,
+                        principalTable: "Chemicals",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Ingredients_Recipes_RecipeId",
+                        column: x => x.RecipeId,
+                        principalTable: "Recipes",
+                        principalColumn: "Id");
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -201,6 +284,26 @@ namespace PyroDB.Migrations
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Chemicals_DataSourceInfoId",
+                table: "Chemicals",
+                column: "DataSourceInfoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Ingredients_ChemicalId",
+                table: "Ingredients",
+                column: "ChemicalId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Ingredients_RecipeId",
+                table: "Ingredients",
+                column: "RecipeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Recipes_DataSourceInfoId",
+                table: "Recipes",
+                column: "DataSourceInfoId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -221,10 +324,22 @@ namespace PyroDB.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Ingredients");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Chemicals");
+
+            migrationBuilder.DropTable(
+                name: "Recipes");
+
+            migrationBuilder.DropTable(
+                name: "DataSourceInfo");
         }
     }
 }

@@ -266,8 +266,8 @@ namespace PyroDB.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("longtext");
 
-                    b.Property<string>("Quantity")
-                        .HasColumnType("longtext");
+                    b.Property<int?>("Quantity")
+                        .HasColumnType("int");
 
                     b.Property<int?>("RecipeId")
                         .HasColumnType("int");

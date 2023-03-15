@@ -1,22 +1,21 @@
 ﻿using Mica;
 using PyroDB.Application.Synchronizers.PyroData;
-using PyroDB.Data;
 
 namespace PyroDB.Application.Jobs
 {
     [JobConcurrency(false)]
-    public class SyncPyroDataJob : IJob
+    public class SyncPyroDataChemicalJob : IJob
     {
-        private readonly PyroDataSynchronizer _crawler;
+        private readonly PyroDataChemicalSynchronizer _crawler;
 
-        public SyncPyroDataJob(PyroDataSynchronizer crawler)
+        public SyncPyroDataChemicalJob(PyroDataChemicalSynchronizer crawler)
         {
             _crawler = crawler;
         }
 
         public async Task Work(IProgress<double> progress, CancellationToken token = default)
         {
-            await _crawler.SyncAll(progress, token);
+            await _crawler.SyncAllAsync(progress, token);
         }
     }
 }

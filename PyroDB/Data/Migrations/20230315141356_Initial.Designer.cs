@@ -11,8 +11,8 @@ using PyroDB.Data;
 namespace PyroDB.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230315081813_CreateModels")]
-    partial class CreateModels
+    [Migration("20230315141356_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -223,12 +223,37 @@ namespace PyroDB.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    b.Property<int?>("DataSourceInfoId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Formula")
+                        .HasColumnType("longtext");
+
                     b.Property<string>("Name")
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DataSourceInfoId");
+
                     b.ToTable("Chemicals");
+                });
+
+            modelBuilder.Entity("PyroDB.Models.DataSourceInfo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("DataSource")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SourceId")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DataSourceInfo");
                 });
 
             modelBuilder.Entity("PyroDB.Models.Ingredient", b =>
@@ -237,14 +262,14 @@ namespace PyroDB.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int>("Amount")
-                        .HasColumnType("int");
-
                     b.Property<int?>("ChemicalId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .HasColumnType("longtext");
+
+                    b.Property<int?>("Quantity")
+                        .HasColumnType("int");
 
                     b.Property<int?>("RecipeId")
                         .HasColumnType("int");
@@ -264,10 +289,15 @@ namespace PyroDB.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    b.Property<int?>("DataSourceInfoId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DataSourceInfoId");
 
                     b.ToTable("Recipes");
                 });
@@ -323,6 +353,15 @@ namespace PyroDB.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("PyroDB.Models.Chemical", b =>
+                {
+                    b.HasOne("PyroDB.Models.DataSourceInfo", "DataSourceInfo")
+                        .WithMany()
+                        .HasForeignKey("DataSourceInfoId");
+
+                    b.Navigation("DataSourceInfo");
+                });
+
             modelBuilder.Entity("PyroDB.Models.Ingredient", b =>
                 {
                     b.HasOne("PyroDB.Models.Chemical", "Chemical")
@@ -334,6 +373,15 @@ namespace PyroDB.Migrations
                         .HasForeignKey("RecipeId");
 
                     b.Navigation("Chemical");
+                });
+
+            modelBuilder.Entity("PyroDB.Models.Recipe", b =>
+                {
+                    b.HasOne("PyroDB.Models.DataSourceInfo", "DataSourceInfo")
+                        .WithMany()
+                        .HasForeignKey("DataSourceInfoId");
+
+                    b.Navigation("DataSourceInfo");
                 });
 
             modelBuilder.Entity("PyroDB.Models.Recipe", b =>
