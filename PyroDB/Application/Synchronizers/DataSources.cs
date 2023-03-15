@@ -1,4 +1,4 @@
-﻿namespace PyroDB.Application.Crawlers
+﻿namespace PyroDB.Application.Synchronizers
 {
     public enum DataSources
     {

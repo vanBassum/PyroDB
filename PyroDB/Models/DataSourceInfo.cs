@@ -1,4 +1,4 @@
-﻿using PyroDB.Application.Crawlers;
+﻿using PyroDB.Application.Synchronizers;
 using System.ComponentModel.DataAnnotations;
 
 namespace PyroDB.Models

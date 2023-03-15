@@ -1,5 +1,5 @@
 ﻿using Mica;
-using PyroDB.Application.Crawlers.PyroData;
+using PyroDB.Application.Synchronizers.PyroData;
 using PyroDB.Data;
 
 namespace PyroDB.Application.Jobs
@@ -7,9 +7,9 @@ namespace PyroDB.Application.Jobs
     [JobConcurrency(false)]
     public class SyncPyroDataJob : IJob
     {
-        private readonly PyroDataCrawler _crawler;
+        private readonly PyroDataSynchronizer _crawler;
 
-        public SyncPyroDataJob(PyroDataCrawler crawler)
+        public SyncPyroDataJob(PyroDataSynchronizer crawler)
         {
             _crawler = crawler;
         }

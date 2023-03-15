@@ -1,7 +1,7 @@
 using Mica;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using PyroDB.Application.Crawlers.PyroData;
+using PyroDB.Application.Synchronizers.PyroData;
 using PyroDB.Application.Jobs;
 using PyroDB.Data;
 
@@ -21,7 +21,7 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddHttpClient();
 
-builder.Services.AddScoped<PyroDataCrawler>();
+builder.Services.AddScoped<PyroDataSynchronizer>();
 
 builder.Services.AddMicaScheduler(scheduler => scheduler
     .AddJob<SyncPyroDataJob>(job => job

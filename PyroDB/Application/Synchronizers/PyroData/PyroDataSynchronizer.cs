@@ -11,16 +11,16 @@ using System.Security.Policy;
 using System.Text.Json;
 using static System.Net.Mime.MediaTypeNames;
 
-namespace PyroDB.Application.Crawlers.PyroData
+namespace PyroDB.Application.Synchronizers.PyroData
 {
-    public class PyroDataCrawler
+    public class PyroDataSynchronizer
     {
         private readonly string baseUrl = "https://pyrodata.com";
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly HttpClient _httpClient;
         private readonly IServiceProvider _serviceProvider;
 
-        public PyroDataCrawler(IServiceProvider serviceProvider, IHttpClientFactory httpClientFactory)
+        public PyroDataSynchronizer(IServiceProvider serviceProvider, IHttpClientFactory httpClientFactory)
         {
             _serviceProvider = serviceProvider;
             _httpClientFactory = httpClientFactory;
