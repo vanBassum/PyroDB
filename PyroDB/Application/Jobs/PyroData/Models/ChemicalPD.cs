@@ -1,4 +1,5 @@
 ﻿using HtmlAgilityPack;
+using PyroDB.Application.Extentions;
 
 namespace PyroDB.Application.Jobs.PyroData.Models
 {
@@ -7,13 +8,11 @@ namespace PyroDB.Application.Jobs.PyroData.Models
         public string? Uri { get; set; }
         public string? Name { get; set; }
         public string? Formula { get; set; }
-
         public void FromNode(HtmlNode node)
         {
-            var titleNode = node.Descendants().FirstOrDefault(c => c.Attributes["id"]?.Value?.Contains("page-title") == true);
-            var formulaNode = node.Descendants("div").FirstOrDefault(a => a.Attributes["class"]?.Value?.Contains("field-name-field-symbol") == true)?.Descendants("p")?.FirstOrDefault();
-            Name = titleNode?.InnerText;
-            Formula = formulaNode?.InnerText;
+            Name = node.Query("#page-title")?.InnerText;
+            Formula = node.Query("div .field-name-field-symbol .field-item")?.InnerText;
+
         }
     }
 

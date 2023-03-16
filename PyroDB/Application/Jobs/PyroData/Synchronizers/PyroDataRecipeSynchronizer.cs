@@ -61,8 +61,10 @@ namespace PyroDB.Application.Jobs.PyroData.Synchronizers
             }
 
             //Sync dbRecipe properties
-            if (dbRecipe.Name == null)
-                dbRecipe.Name = pdRecipe.Name;
+            dbRecipe.Name ??= pdRecipe.Name;
+            dbRecipe.Description ??= pdRecipe.Description;
+            dbRecipe.Source ??= pdRecipe.Source;
+            dbRecipe.Video ??= pdRecipe.Video;
 
             foreach (var pdIngredient in pdRecipe.Ingredients)
             {

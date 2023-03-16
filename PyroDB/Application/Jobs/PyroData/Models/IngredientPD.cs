@@ -1,4 +1,6 @@
 ﻿using HtmlAgilityPack;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using PyroDB.Application.Extentions;
 
 namespace PyroDB.Application.Jobs.PyroData.Models
 {
@@ -9,12 +11,9 @@ namespace PyroDB.Application.Jobs.PyroData.Models
         public string? ChemicalLink { get; set; }
         public void FromNode(HtmlNode node)
         {
-            var nameNode = node.Descendants("span").Where(a => a.Attributes["class"].Value.Contains("ingredient-name")).FirstOrDefault();
-            var quantityNode = node.Descendants("div").Where(a => a.Attributes["class"].Value.Contains("quantity-unit")).FirstOrDefault();
-            var linkNode = nameNode?.Descendants("a").FirstOrDefault();
-            Name = nameNode?.InnerText;
-            Quantity = quantityNode?.InnerText;
-            ChemicalLink = linkNode?.Attributes["href"]?.Value;
+            Name = node.Query(".ingredient-name")?.InnerText;
+            Quantity = node.Query(".quantity-unit")?.InnerText;
+            ChemicalLink = node.Query(".ingredient-name a")?.Attributes["href"]?.Value;
         }
     }
 }

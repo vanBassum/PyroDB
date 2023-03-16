@@ -1,4 +1,7 @@
 ﻿using HtmlAgilityPack;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using PyroDB.Application.Extentions;
 
 namespace PyroDB.Application.Jobs.PyroData.Models
 {
@@ -6,12 +9,19 @@ namespace PyroDB.Application.Jobs.PyroData.Models
     {
         public string? Uri { get; set; }
         public string? Name { get; set; }
+        public string? Description { get; set; }
+        public string? Instructions { get; set; }
+        public string? Source { get; set; }
+        public string? Video { get; set; }
         public List<IngredientPD> Ingredients { get; set; } = new List<IngredientPD>();
 
         public void FromNode(HtmlNode node)
         {
-            var titleNode = node.Descendants().FirstOrDefault(c => c.Attributes["id"]?.Value?.Contains("page-title") == true);
-            Name = titleNode?.InnerText;
+            Name = node.Query("#page-title")?.InnerText;
+            Description = node.Query(".recipe-description .section")?.InnerText;
+            Instructions = node.Query(".recipe-instruction .section")?.InnerText;
+            Source = node.Query(".field-name-field-source .field-item")?.InnerText;
+            Video = node.Query(".player iframe")?.Attributes["src"]?.Value;
             FindIngredients(node);
         }
 
@@ -26,5 +36,7 @@ namespace PyroDB.Application.Jobs.PyroData.Models
             }
         }
 
+
     }
+
 }
