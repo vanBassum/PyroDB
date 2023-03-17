@@ -35,7 +35,17 @@ namespace PyroDB.Controllers
             if (chem == null)
                 return NotFound();
 
-            user.OwnedChems.Add(chem);
+            if(data.Value)
+            {
+                if(!user.OwnedChems.Contains(chem))
+                    user.OwnedChems.Add(chem);
+            }
+            else
+            {
+                user.OwnedChems.Remove(chem);
+            }
+
+
             await _context.SaveChangesAsync();
             return Ok();
         }
