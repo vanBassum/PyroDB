@@ -1,4 +1,7 @@
-﻿namespace PyroDB.Services
+﻿using Microsoft.AspNetCore.Identity;
+using PyroDB.Models.Database;
+
+namespace PyroDB.Services
 {
     public class UserResolverService
     {
@@ -8,9 +11,14 @@
             _context = context;
         }
 
-        public string? GetCurrentUser()
-        {
-            return _context.HttpContext?.User?.Identity?.Name;
-        }
+
+       //public ApplicationUser GetCurrentUser()
+       //{
+       //    
+       //    var user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+       //
+       //    return _context.HttpContext?.User?.Identity
+       //}
+
     }
 }

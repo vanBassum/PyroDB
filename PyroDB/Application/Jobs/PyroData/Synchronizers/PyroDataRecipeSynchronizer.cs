@@ -3,7 +3,7 @@ using Microsoft.Net.Http.Headers;
 using MySqlX.XDevAPI.Common;
 using PyroDB.Application.Jobs.PyroData.Models;
 using PyroDB.Data;
-using PyroDB.Models;
+using PyroDB.Models.Database;
 using System;
 using System.Diagnostics;
 using System.Net;

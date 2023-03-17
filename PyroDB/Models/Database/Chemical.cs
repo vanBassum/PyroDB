@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace PyroDB.Models
+namespace PyroDB.Models.Database
 {
     public class Chemical : ITrackChanges
     {
@@ -10,6 +10,6 @@ namespace PyroDB.Models
         public string? Formula { get; set; }
         public virtual DataSourceInfo? DataSourceInfo { get; set; }
         public virtual ICollection<ChangeTrackerItem> Changes { get; set; } = new List<ChangeTrackerItem>();
+        public virtual ICollection<ApplicationUser> OwnedBy { get; set; } = new List<ApplicationUser>();
     }
-
 }

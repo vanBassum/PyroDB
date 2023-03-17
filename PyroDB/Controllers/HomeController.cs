@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PyroDB.Models;
+using PyroDB.Models.Database;
 using System.Diagnostics;
 
 namespace PyroDB.Controllers

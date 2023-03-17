@@ -5,6 +5,7 @@ using PyroDB.Data;
 using PyroDB.Application.Jobs.PyroData;
 using PyroDB.Application.Jobs.PyroData.Synchronizers;
 using PyroDB.Services;
+using PyroDB.Models.Database;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,8 +17,11 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultUI()
+    .AddDefaultTokenProviders();
+
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddHttpClient();
@@ -25,16 +29,16 @@ builder.Services.AddHttpClient();
 builder.Services.AddScoped<PyroDataRecipeSynchronizer>();
 builder.Services.AddScoped<PyroDataChemicalSynchronizer>();
 
-builder.Services.AddMicaScheduler(scheduler => scheduler
-    .AddJob<SyncPyroDataRecipeJob>(job => job
-        .AddTrigger(trg => trg
-            .Interval = TimeSpan.FromDays(30)))
-    .AddJob<SyncPyroDataChemicalJob>(job => job
-        .AddTrigger(trg => trg
-            .Interval = TimeSpan.FromDays(30)))
-    );
+//builder.Services.AddMicaScheduler(scheduler => scheduler
+//    .AddJob<SyncPyroDataRecipeJob>(job => job
+//        .AddTrigger(trg => trg
+//            .Interval = TimeSpan.FromDays(30)))
+//    .AddJob<SyncPyroDataChemicalJob>(job => job
+//        .AddTrigger(trg => trg
+//            .Interval = TimeSpan.FromDays(30)))
+//    );
 
-builder.Services.AddTransient<UserResolverService>();
+//builder.Services.AddTransient<UserResolverService>();
 
 
 var app = builder.Build();

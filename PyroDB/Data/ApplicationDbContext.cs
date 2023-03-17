@@ -1,19 +1,18 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using PyroDB.Models;
+using PyroDB.Models.Database;
 using PyroDB.Services;
 using System.Runtime.CompilerServices;
 
 namespace PyroDB.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
-        private readonly UserResolverService _userService;
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, UserResolverService userService)
+
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
-            _userService = userService;
         }
 
 
@@ -24,46 +23,50 @@ namespace PyroDB.Data
 
 
 
-        public override int SaveChanges()
-        {
-            SaveChangesHandler().RunSynchronously();
-            return base.SaveChanges();
-        }
-
-        public override int SaveChanges(bool acceptAllChangesOnSuccess)
-        {
-            SaveChangesHandler().RunSynchronously();
-            return base.SaveChanges(acceptAllChangesOnSuccess);
-        }
-
-        public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
-        {
-            await SaveChangesHandler();
-            return await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
-        }
-        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-        {
-            await SaveChangesHandler();
-            return await base.SaveChangesAsync(cancellationToken);
-        }
 
 
-        private async Task SaveChangesHandler()
-        {
-            var v = _userService.GetCurrentUser();
 
-            foreach (var e in this.ChangeTracker.Entries<ITrackChanges>())
-            {
-                if(e.State == EntityState.Added)
-                {
-                    e.Entity.Changes.Add(new ChangeTrackerItem(DataSources.Unknown, ChangeTrackerTypes.Added));
-                }
-                if(e.State == EntityState.Modified)
-                {
-                    e.Entity.Changes.Add(new ChangeTrackerItem(DataSources.Unknown, ChangeTrackerTypes.Modified));
-                }
-            }
-        }
+
+        //public override int SaveChanges()
+        //{
+        //    SaveChangesHandler().RunSynchronously();
+        //    return base.SaveChanges();
+        //}
+        //
+        //public override int SaveChanges(bool acceptAllChangesOnSuccess)
+        //{
+        //    SaveChangesHandler().RunSynchronously();
+        //    return base.SaveChanges(acceptAllChangesOnSuccess);
+        //}
+        //
+        //public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
+        //{
+        //    await SaveChangesHandler();
+        //    return await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+        //}
+        //public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        //{
+        //    await SaveChangesHandler();
+        //    return await base.SaveChangesAsync(cancellationToken);
+        //}
+        //
+        //
+        //private async Task SaveChangesHandler()
+        //{
+        //    var v = _userService.GetCurrentUser();
+        //
+        //    foreach (var e in this.ChangeTracker.Entries<ITrackChanges>())
+        //    {
+        //        if(e.State == EntityState.Added)
+        //        {
+        //            e.Entity.Changes.Add(new ChangeTrackerItem(DataSources.Unknown, ChangeTrackerTypes.Added));
+        //        }
+        //        if(e.State == EntityState.Modified)
+        //        {
+        //            e.Entity.Changes.Add(new ChangeTrackerItem(DataSources.Unknown, ChangeTrackerTypes.Modified));
+        //        }
+        //    }
+        //}
 
     }
 }

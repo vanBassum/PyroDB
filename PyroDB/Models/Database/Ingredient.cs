@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace PyroDB.Models
+namespace PyroDB.Models.Database
 {
     public class Ingredient
     {

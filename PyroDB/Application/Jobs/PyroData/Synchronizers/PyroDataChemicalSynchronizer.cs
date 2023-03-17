@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PyroDB.Application.Jobs.PyroData.Models;
 using PyroDB.Data;
-using PyroDB.Models;
+using PyroDB.Models.Database;
 using System.Diagnostics;
 
 namespace PyroDB.Application.Jobs.PyroData.Synchronizers

@@ -1,0 +1,41 @@
+﻿@using PyroDB.Models.Base
+@model IEnumerable<ChemicalInfo>
+@{
+    ViewData["Title"] = "Chemicals";
+}
+
+
+<table>
+    <thead>
+        <tr>
+            <th>
+                Owned
+            </th>
+            <th>
+                Name
+            </th>
+            <th>
+                Formula
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var b in Model)
+        {
+            <tr>
+                <td>
+                    <input class="form-check-input ChemInfo" type="checkbox" role="switch" id="flexSwitchCheckDefault" checked="@b.Owned"
+                       data-uri="/chemical/owned" data-id="@b.DbChemical.Id">
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => b.DbChemical.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => b.DbChemical.Formula)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+

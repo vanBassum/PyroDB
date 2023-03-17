@@ -1,4 +1,4 @@
-﻿namespace PyroDB.Models
+﻿namespace PyroDB.Models.Database
 {
     public interface ITrackChanges
     {

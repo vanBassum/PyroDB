@@ -208,6 +208,10 @@ namespace PyroDB.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(type: "longtext", nullable: true),
+                    Description = table.Column<string>(type: "longtext", nullable: true),
+                    Instructions = table.Column<string>(type: "longtext", nullable: true),
+                    Source = table.Column<string>(type: "longtext", nullable: true),
+                    Video = table.Column<string>(type: "longtext", nullable: true),
                     DataSourceInfoId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
@@ -222,13 +226,66 @@ namespace PyroDB.Migrations
                 .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "ApplicationUserChemical",
+                columns: table => new
+                {
+                    OwnedById = table.Column<string>(type: "varchar(255)", nullable: false),
+                    OwnedChemsId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ApplicationUserChemical", x => new { x.OwnedById, x.OwnedChemsId });
+                    table.ForeignKey(
+                        name: "FK_ApplicationUserChemical_AspNetUsers_OwnedById",
+                        column: x => x.OwnedById,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ApplicationUserChemical_Chemicals_OwnedChemsId",
+                        column: x => x.OwnedChemsId,
+                        principalTable: "Chemicals",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Changes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    Source = table.Column<int>(type: "int", nullable: false),
+                    ChangeTrackerType = table.Column<int>(type: "int", nullable: false),
+                    Timestamp = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    ChemicalId = table.Column<int>(type: "int", nullable: true),
+                    RecipeId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Changes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Changes_Chemicals_ChemicalId",
+                        column: x => x.ChemicalId,
+                        principalTable: "Chemicals",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Changes_Recipes_RecipeId",
+                        column: x => x.RecipeId,
+                        principalTable: "Recipes",
+                        principalColumn: "Id");
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "Ingredients",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(type: "longtext", nullable: true),
-                    Quantity = table.Column<int>(type: "int", nullable: true),
+                    Quantity = table.Column<float>(type: "float", nullable: true),
                     ChemicalId = table.Column<int>(type: "int", nullable: true),
                     RecipeId = table.Column<int>(type: "int", nullable: true)
                 },
@@ -247,6 +304,11 @@ namespace PyroDB.Migrations
                         principalColumn: "Id");
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ApplicationUserChemical_OwnedChemsId",
+                table: "ApplicationUserChemical",
+                column: "OwnedChemsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -286,6 +348,16 @@ namespace PyroDB.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Changes_ChemicalId",
+                table: "Changes",
+                column: "ChemicalId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Changes_RecipeId",
+                table: "Changes",
+                column: "RecipeId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Chemicals_DataSourceInfoId",
                 table: "Chemicals",
                 column: "DataSourceInfoId");
@@ -309,6 +381,9 @@ namespace PyroDB.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "ApplicationUserChemical");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
             migrationBuilder.DropTable(
@@ -322,6 +397,9 @@ namespace PyroDB.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "Changes");
 
             migrationBuilder.DropTable(
                 name: "Ingredients");
