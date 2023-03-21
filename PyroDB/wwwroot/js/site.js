@@ -23,14 +23,47 @@ function AfterLoad(loadedObj) {
                 type: "POST",
                 url: uri,
                 contentType: "application/json; charset=utf-8",
-                data: JSON.stringify(data) ,
+                data: JSON.stringify(data),
                 success: function (data) {
-                    
+
                 },
                 error: function (response) {
                     alert("error");
                 }
             });
         });
-    })
+    });
+
+    loadedObj.find("*#loadMore").each(function (index, value) {
+        var obj = $(this);
+        var uri = "/Recipe/GetRecipes";
+
+        obj.click(function () {
+            var data = {
+                "page": $("#pageNo").val() + 1,
+                "size": $("#pageSize").val(),
+            };
+
+            $.ajax({
+                type: "GET",
+                url: uri,
+                contentType: "application/json; charset=utf-8",
+                data: data,
+                success: function (data) {
+                    var container = $(".cardAuto");
+                    $.each(data, function (index, value) {
+                        container.append(value);
+                    });
+
+                },
+                error: function (response) {
+                    alert("error");
+                }
+            });
+
+
+
+        });
+
+    });
 };

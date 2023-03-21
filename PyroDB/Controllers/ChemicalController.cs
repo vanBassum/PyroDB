@@ -61,8 +61,9 @@ namespace PyroDB.Controllers
 
             foreach (var chem in chemicals)
             {
-                bool owned = user?.OwnedChems?.Contains(chem) ?? false;
-                chemicalInfos.Add(new ChemicalInfo(chem, owned));
+                var chemInfo = ChemicalInfo.Create(chem);
+                chemInfo.Owned = user?.OwnedChems?.Contains(chem) ?? false;
+                chemicalInfos.Add(chemInfo);
             }
 
             return View(chemicalInfos);

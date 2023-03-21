@@ -4,31 +4,20 @@
     ViewData["Title"] = "Recipes";
 }
 
+<div class="cardAuto">
+    @foreach (var b in Model)
+    {
 
-<table>
-    <thead>
-        <tr>
-            <th>
-                Have all ingredients
-            </th>
-            <th>
-                Name
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var b in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => b.HasIngredients)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => b.DbRecipe.Name)
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+        <partial name="_Recipe" model="b" />
+
+    }
+</div>
+
+<button type="button" class="btn btn-primary" id="loadMore">Load more</button>
+
+
+<input type="hidden" id="pageNo" name="pageNo" value="0" />
+<input type="hidden" id="pageSize" name="pageSize" value="@Model.Count()" />
+
 
 

@@ -1,0 +1,36 @@
+﻿@using PyroDB.Models.Base
+@model RecipeInfo
+
+
+
+<div class="card recipe">
+    <div class="card-header">
+        @Model.Name
+    </div>
+    <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Quantity</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach(var ingredient in Model.Ingredients)
+                {
+                    string c = "";
+                    if (ingredient.Chemical != null)
+                    {
+                        c = ingredient.Chemical.Owned ? "availableChem" : "missingChem";
+                    }
+                    <tr class="@c">
+                        <td>@ingredient.Name</td>
+                        <td>@ingredient.Quantity</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+

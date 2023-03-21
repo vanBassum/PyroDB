@@ -4,16 +4,18 @@ namespace PyroDB.Models.Base
 {
     public class RecipeInfo
     {
-        public Recipe DbRecipe { get; set; }
-        public bool HasIngredients { get; set; } = false;
+        public int Id { get; set; }
+        public string? Name { get; set; }
+        public List<IngredientInfo> Ingredients { get; set; } = new List<IngredientInfo>();
 
-
-        public RecipeInfo(Recipe dbRecipe, bool hasIngredients)
+        public static RecipeInfo Create(Recipe dbItem)
         {
-            DbRecipe = dbRecipe;
-            HasIngredients = hasIngredients;
+            RecipeInfo result = new RecipeInfo
+            {
+                Id = dbItem.Id,
+                Name =dbItem.Name
+            };
+            return result;
         }
-
-
     }
 }

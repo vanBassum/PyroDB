@@ -4,16 +4,21 @@ namespace PyroDB.Models.Base
 {
     public class ChemicalInfo
     {
-        public Chemical DbChemical { get; set; }
+        public int Id { get; set; }
+        public string? Name { get; set; }
+        public string? Formula { get; set; }
         public bool Owned { get; set; } = false;
 
 
-        public ChemicalInfo(Chemical dbChemical, bool owned)
+        public static ChemicalInfo Create(Chemical dbItem)
         {
-            DbChemical = dbChemical;
-            Owned = owned;
+            ChemicalInfo result = new ChemicalInfo
+            {
+                Id= dbItem.Id,
+                Name= dbItem.Name,
+                Formula= dbItem.Formula,
+            };
+            return result;
         }
-
-
     }
 }

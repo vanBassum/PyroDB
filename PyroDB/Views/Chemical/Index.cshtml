@@ -24,14 +24,13 @@
         {
             <tr>
                 <td>
-                    <input class="form-check-input ChemInfo" type="checkbox" role="switch" id="flexSwitchCheckDefault" checked="@b.Owned"
-                       data-uri="/chemical/owned" data-id="@b.DbChemical.Id">
+                    <input class="form-check-input ChemInfo" type="checkbox" id="flexSwitchCheckDefault" checked="@b.Owned" data-uri="/chemical/owned" data-id="@b.Id">
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => b.DbChemical.Name)
+                    @Html.DisplayFor(modelItem => b.Name)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => b.DbChemical.Formula)
+                    @Html.DisplayFor(modelItem => b.Formula)
                 </td>
             </tr>
         }
