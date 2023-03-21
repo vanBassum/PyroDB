@@ -23,30 +23,19 @@ namespace PyroDB.Controllers
             _userManager = userManager;
         }
 
-        bool HasChems(Recipe recipe, ApplicationUser user)
-        {
-            foreach(var ingredient in recipe.Ingredients)
-            {
-                bool contains = ingredient.Chemical?.OwnedBy.Contains(user) ?? false;
-                if (contains == false)
-                    return false;
-            }
-            return true;
-        }
-
-
         public async Task<IActionResult> Index()
         {
+            var user = await _userManager.GetUserAsync(User);
+            var hasChemsRecipes = await _context.Recipes.Where(a => a.Ingredients.All(i => i.Chemical.OwnedBy.Contains(user))).ToListAsync();
+
             //List of all chems, with bool wheter its owned by current user
             List<RecipeInfo> model = new List<RecipeInfo>();
             var recipes = await _context.Recipes.ToListAsync();
-            var user = await _userManager.GetUserAsync(User);
+            
 
             foreach (var recipe in recipes)
             {
-                bool hasChemicals = false;
-                if(user != null)
-                    hasChemicals = HasChems(recipe, user);
+                bool hasChemicals = hasChemsRecipes.Contains(recipe);
                 model.Add(new RecipeInfo(recipe, hasChemicals));
             }
 

@@ -14,5 +14,7 @@ namespace PyroDB.Models.Database
         public virtual ICollection<Ingredient> Ingredients { get; set; } = new List<Ingredient>();
         public virtual DataSourceInfo? DataSourceInfo { get; set; }
         public virtual ICollection<ChangeTrackerItem> Changes { get; set; } = new List<ChangeTrackerItem>();
+
+        public override string ToString() => Name??"";
     }
 }

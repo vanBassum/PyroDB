@@ -9,6 +9,8 @@ namespace PyroDB.Models.Database
         public string? Name { get; set; }
         public float? Quantity { get; set; }
         public virtual Chemical? Chemical { get; set; }
+
+        public override string ToString() => Name ?? "";
     }
 
 }

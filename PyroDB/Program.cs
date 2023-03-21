@@ -29,14 +29,14 @@ builder.Services.AddHttpClient();
 builder.Services.AddScoped<PyroDataRecipeSynchronizer>();
 builder.Services.AddScoped<PyroDataChemicalSynchronizer>();
 
-builder.Services.AddMicaScheduler(scheduler => scheduler
-    .AddJob<SyncPyroDataRecipeJob>(job => job
-        .AddTrigger(trg => trg
-            .Interval = TimeSpan.FromDays(30)))
-    .AddJob<SyncPyroDataChemicalJob>(job => job
-        .AddTrigger(trg => trg
-            .Interval = TimeSpan.FromDays(30)))
-    );
+//builder.Services.AddMicaScheduler(scheduler => scheduler
+//    .AddJob<SyncPyroDataRecipeJob>(job => job
+//        .AddTrigger(trg => trg
+//            .Interval = TimeSpan.FromDays(30)))
+//    .AddJob<SyncPyroDataChemicalJob>(job => job
+//        .AddTrigger(trg => trg
+//            .Interval = TimeSpan.FromDays(30)))
+//    );
 
 //builder.Services.AddTransient<UserResolverService>();
 

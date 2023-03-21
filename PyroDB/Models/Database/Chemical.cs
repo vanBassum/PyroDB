@@ -11,5 +11,7 @@ namespace PyroDB.Models.Database
         public virtual DataSourceInfo? DataSourceInfo { get; set; }
         public virtual ICollection<ChangeTrackerItem> Changes { get; set; } = new List<ChangeTrackerItem>();
         public virtual ICollection<ApplicationUser> OwnedBy { get; set; } = new List<ApplicationUser>();
+
+        public override string ToString() => Name ?? "";
     }
 }
