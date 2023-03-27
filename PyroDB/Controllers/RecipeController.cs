@@ -43,26 +43,25 @@ namespace PyroDB.Controllers
             page ??= 0;
             size ??= 5;
 
-            List<RecipeInfo> model = new List<RecipeInfo>();
             var user = await _userManager.GetUserAsync(User);
-            var recipes = await _context.Recipes.CustomQuery(filter, order, page, size).ToListAsync();
-            foreach (var recipe in recipes)
-            {
-                var recipeInfo = RecipeInfo.Create(recipe);
-                foreach (var ingredient in recipe.Ingredients)
-                {
-                    var ingredientInfo = IngredientInfo.Create(ingredient);
-                    if (ingredient.Chemical != null)
-                    {
-                        ingredientInfo.Chemical = ChemicalInfo.Create(ingredient.Chemical);
-                        if (user != null)
-                            ingredientInfo.Chemical.Owned = user.OwnedChems.Any(c => c.Id == ingredientInfo.Chemical?.Id);
+            var query = _context.Recipes.Select(recipe => new RecipeInfo { 
+                Id = recipe.Id,
+                Name = recipe.Name,
+                Ingredients = recipe.Ingredients.Select(ingredient=> new IngredientInfo { 
+                    Id= ingredient.Id,
+                    Name = ingredient.Name,
+                    Quantity= ingredient.Quantity,
+                    Chemical = ingredient.Chemical == null ? null : 
+                    new ChemicalInfo { 
+                        Id = ingredient.Chemical.Id,
+                        Name = ingredient.Chemical.Name,
+                        Formula = ingredient.Chemical.Formula,
+                        Owned = ingredient.Chemical.OwnedBy.Contains(user)
                     }
-                    recipeInfo.Ingredients.Add(ingredientInfo);
-                }
-                model.Add(recipeInfo);
-            }
-            return model;
+                }),
+            });
+
+            return await query.CustomQuery(filter, order, page, size).ToListAsync();
         }
 
         public async Task<IActionResult> GetRecipes(string? filter, string? order, int? page, int? size)

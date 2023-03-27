@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PyroDB.Application.Jobs.PyroData.Models;
 using PyroDB.Data;
 using PyroDB.Models;
 using PyroDB.Models.Base;
@@ -54,19 +55,20 @@ namespace PyroDB.Controllers
 
         public async Task<IActionResult> Index()
         {
-            //List of all chems, with bool wheter its owned by current user
-            List<ChemicalInfo> chemicalInfos = new List<ChemicalInfo>();
-            var chemicals = await _context.Chemicals.ToListAsync();
             var user = await _userManager.GetUserAsync(User);
+            var query = _context.Chemicals.Select(chemical=>
+                new ChemicalInfo
+                {
+                    Id = chemical.Id,
+                    Name = chemical.Name,
+                    Formula = chemical.Formula,
+                    Owned = chemical.OwnedBy.Contains(user)
+                }
+            );
 
-            foreach (var chem in chemicals)
-            {
-                var chemInfo = ChemicalInfo.Create(chem);
-                chemInfo.Owned = user?.OwnedChems?.Contains(chem) ?? false;
-                chemicalInfos.Add(chemInfo);
-            }
 
-            return View(chemicalInfos);
+            var model = await query.ToListAsync();
+            return View(model);
         }
     }
 }
